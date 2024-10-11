@@ -1,7 +1,7 @@
 import { useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
 import GreenSealPlatform from '../../build/contracts/GreenSealPlatform.json';
 
-const platformAddress = process.env.NEXT_PUBLIC_CONTRACT_PLATFORM as string;
+const platformAddress = process.env.NEXT_PUBLIC_CONTRACT_PLATFORM as `0x${string}`;
 
 export function useContractPlatform(method: string, args: unknown[] = []) {
   const {
@@ -19,10 +19,14 @@ export function useContractPlatform(method: string, args: unknown[] = []) {
     })
   }
 
-  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+  const { isLoading: isConfirming, isSuccess: isConfirmed, error } =
     useWaitForTransactionReceipt({
       hash,
     })
+
+    if (error) {
+      console.error(error)
+    }
 
   return {
     hash,

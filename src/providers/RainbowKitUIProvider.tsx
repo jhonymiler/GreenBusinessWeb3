@@ -21,7 +21,7 @@ const localChain = {
 
 const config = getDefaultConfig({
     appName: 'Empresa Verde',
-    chains: [localChain, polygon, mainnet,],
+    chains: [localChain, polygon, mainnet],
     projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_KEY as string,
 });
 

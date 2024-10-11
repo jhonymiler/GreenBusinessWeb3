@@ -1,10 +1,14 @@
-import Recycler from "@/components/Card/Recycler";
-import WasteGenerator from "@/components/Card/WasteGenerator";
 import Menu from "@/components/Menu";
+import Register from "@/components/Register";
 import Head from "next/head";
-import { Col, Container, Row } from "react-bootstrap";
+import { Container, Row } from "react-bootstrap";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import { useAccount } from 'wagmi'
 
 export default function Home() {
+
+  const { isConnected } = useAccount()
   return (
     <>
       <Head>
@@ -19,15 +23,21 @@ export default function Home() {
           <h1>Empresa Verde</h1>
           <p>Sistema de certificação ambiental</p>
         </Row>
-        <Row>
-          <Col xs={12} md={6}>
-            <Recycler />
-          </Col>
-          <Col xs={12} md={6}>
-            <WasteGenerator />
-          </Col>
-        </Row>
+        {isConnected ? <Register /> : <p>Página de apresentação</p>}
+
       </Container >
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </>
   );
 }

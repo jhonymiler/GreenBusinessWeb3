@@ -38,6 +38,7 @@ services:
       - "8545:8545"
     volumes:
       - ganache_data:/ganache_data
+      - ./ganache_logs:/app/logs # Monta a pasta para armazenar logs no host
     entrypoint:
       - node
       - /app/ganache-core.docker.cli.js
