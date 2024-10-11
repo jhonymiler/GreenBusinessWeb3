@@ -1,8 +1,8 @@
+import type { NextApiRequest, NextApiResponse } from "next";
 import { PrismaClient } from '@prisma/client';
-
 const prisma = new PrismaClient();
 
-export default async function handler(req, res) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
         const { companyType, companyName, email, phone, city, address, state, hash } = req.body;
 
@@ -13,7 +13,7 @@ export default async function handler(req, res) {
 
         try {
             // Insere os dados da empresa no banco de dados junto com o hash da transação
-            const company = await prisma.company.create({
+            const company = await prisma.business.create({
                 data: {
                     companyType,
                     companyName,
