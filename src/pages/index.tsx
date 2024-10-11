@@ -1,5 +1,8 @@
-import ConnectWallet from "@/components/ConnectWallet";
+import Recycler from "@/components/Card/Recycler";
+import WasteGenerator from "@/components/Card/WasteGenerator";
+import Menu from "@/components/Menu";
 import Head from "next/head";
+import { Col, Container, Row } from "react-bootstrap";
 
 export default function Home() {
   return (
@@ -10,11 +13,19 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
+      <Menu />
+      <Container>
         <h1>Empresa Verde</h1>
         <p>Sistema de certificação ambiental</p>
-        <ConnectWallet />
-      </main>
+        <Row>
+          <Col xs={12} md={6}>
+            <Recycler />
+          </Col>
+          <Col xs={12} md={6}>
+            <WasteGenerator />
+          </Col>
+        </Row>
+      </Container>
     </>
   );
 }
