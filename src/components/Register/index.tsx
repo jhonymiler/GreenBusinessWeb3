@@ -7,7 +7,6 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useContractPlatform } from '@/contracts/managment';
 
-
 export default function Register() {
     const [formData, setFormData] = useState({
         companyType: 'geradora', // default option
@@ -23,9 +22,10 @@ export default function Register() {
     // Chama os hooks incondicionalmente
     const recyclerHook = useContractPlatform('registerRecycler', []);
     const wasteProducerHook = useContractPlatform('registerWasteGenerator', []);
+    const [registred, setRegistred] = useState(false);
 
     // Determina o hook com base no tipo de empresa selecionado
-    const { isPending, isConfirming, isConfirmed, submit } = formData.companyType === 'recicladora'
+    const { isPending, isConfirming, isConfirmed, hash, submit } = formData.companyType === 'recicladora'
         ? recyclerHook
         : wasteProducerHook;
 
@@ -39,16 +39,25 @@ export default function Register() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
+        // Submete a transação na blockchain
         await submit();
-        if (isConfirmed) {
+
+        // Verifica se a transação foi confirmada
+        if (isConfirmed && hash && !registred) {
             try {
+                // Atualiza o hash no formData para enviar para o backend
+                const updatedFormData = { ...formData, hash };
+
+                // Envia para a API de cadastro
                 const response = await fetch('/api/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(formData),
+                    body: JSON.stringify(updatedFormData),
                 });
+
+                console.log(response);
 
                 if (response.ok) {
                     toast.success('Empresa cadastrada com sucesso!');
@@ -62,6 +71,7 @@ export default function Register() {
                         state: '',
                         hash: ''
                     });
+                    setRegistred(false)
                 } else {
                     toast.error('Falha no cadastro. Tente novamente.');
                 }
@@ -70,18 +80,17 @@ export default function Register() {
                 toast.error('Erro ao se conectar com o servidor.');
             }
         } else {
-            toast.error('Erro ao se conectar com o servidor.');
+            toast.error('Erro na transação. Não foi possível confirmar.');
         }
-
-
     };
 
     useEffect(() => {
-        if (isConfirmed) {
+        if (isConfirmed && hash) {
             const business = formData.companyType === 'geradora' ? "Geradora de resíduos" : "Recicladora";
-            toast.success(`${business} cadastrada com sucesso! 🎉`);
+            toast.success(`${business} cadastrada com sucesso na blockchain! 🎉`);
         }
-    }, [isConfirmed, formData]);
+    }, [isConfirmed, hash, formData]);
+
 
     return (
         <>
@@ -93,26 +102,24 @@ export default function Register() {
                             <Row className="mb-3">
                                 <Form.Group as={Col} controlId="formCompanyType">
                                     <Form.Label>Tipo de Empresa</Form.Label>
-                                    <div>
-                                        <Form.Check
-                                            type="radio"
-                                            label="Recicladora"
-                                            name="companyType"
-                                            value="recicladora"
-                                            checked={formData.companyType === 'recicladora'}
-                                            onChange={handleChange}
-                                            inline
-                                        />
-                                        <Form.Check
-                                            type="radio"
-                                            label="Geradora de Resíduos"
-                                            name="companyType"
-                                            value="geradora"
-                                            checked={formData.companyType === 'geradora'}
-                                            onChange={handleChange}
-                                            inline
-                                        />
-                                    </div>
+                                    <Form.Check
+                                        type="radio"
+                                        label="Recicladora"
+                                        name="companyType"
+                                        value="recicladora"
+                                        checked={formData.companyType === 'recicladora'}
+                                        onChange={handleChange}
+                                        inline
+                                    />
+                                    <Form.Check
+                                        type="radio"
+                                        label="Geradora de Resíduos"
+                                        name="companyType"
+                                        value="geradora"
+                                        checked={formData.companyType === 'geradora'}
+                                        onChange={handleChange}
+                                        inline
+                                    />
                                 </Form.Group>
                             </Row>
 
@@ -221,7 +228,7 @@ export default function Register() {
 
                             {isConfirming && <div>Aguardando confirmação...</div>}
 
-                            <Button className='mt-4' variant="success" disabled={isPending}>
+                            <Button type='submit' className='mt-4' variant="success" disabled={isPending}>
                                 {isPending ? "Processando..." : "Cadastrar"}
                             </Button>
                         </Form>

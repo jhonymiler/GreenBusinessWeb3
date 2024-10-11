@@ -1,3 +1,4 @@
+'use client';
 import Menu from "@/components/Menu";
 import Register from "@/components/Register";
 import Head from "next/head";
@@ -5,10 +6,20 @@ import { Container, Row } from "react-bootstrap";
 import { ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { useAccount } from 'wagmi'
+import { useEffect, useState } from 'react';
 
 export default function Home() {
+  const { isConnected } = useAccount();
+  const [mounted, setMounted] = useState(false);
 
-  const { isConnected } = useAccount()
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null; // ou uma tela de carregamento
+  }
+
   return (
     <>
       <Head>
@@ -24,8 +35,7 @@ export default function Home() {
           <p>Sistema de certificação ambiental</p>
         </Row>
         {isConnected ? <Register /> : <p>Página de apresentação</p>}
-
-      </Container >
+      </Container>
       <ToastContainer
         position="top-right"
         autoClose={5000}
