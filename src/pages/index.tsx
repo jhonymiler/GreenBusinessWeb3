@@ -15,8 +15,10 @@ export default function Home() {
       </Head>
       <Menu />
       <Container>
-        <h1>Empresa Verde</h1>
-        <p>Sistema de certificação ambiental</p>
+        <Row className='mt-5 mb-2'>
+          <h1>Empresa Verde</h1>
+          <p>Sistema de certificação ambiental</p>
+        </Row>
         <Row>
           <Col xs={12} md={6}>
             <Recycler />
@@ -25,7 +27,7 @@ export default function Home() {
             <WasteGenerator />
           </Col>
         </Row>
-      </Container>
+      </Container >
     </>
   );
 }

@@ -2,13 +2,14 @@ const GreenSealToken = artifacts.require("GreenSealToken");
 const GreenSealNFT = artifacts.require("GreenSealNFT");
 const GreenSealPlatform = artifacts.require("GreenSealPlatform");
 
-module.exports = async function (deployer) {
+module.exports = async function (deployer, network, accounts) {
+
     // Deploy the GreenSealToken with initialOwner
-    await deployer.deploy(GreenSealToken);
+    await deployer.deploy(GreenSealToken, { from: accounts[0] });
     const tokenInstance = await GreenSealToken.deployed();
 
     // Deploy the GreenSealNFT with initialOwner
-    await deployer.deploy(GreenSealNFT);
+    await deployer.deploy(GreenSealNFT, { from: accounts[0] });
     const nftInstance = await GreenSealNFT.deployed();
 
     // Deploy the GreenSealPlatform with token and NFT addresses and initialOwner

@@ -13,8 +13,5 @@ RUN yarn global add truffle && yarn
 # Copie todos os arquivos do projeto para o container
 COPY . .
 
-COPY start.sh ./
-RUN chmod +x ./start.sh
-
 # Comando padrão para rodar a aplicação
-CMD ["sh", "-c", "./start.sh"]
+CMD ["sh", "-c", "truffle migrate --reset development && yarn dev"]

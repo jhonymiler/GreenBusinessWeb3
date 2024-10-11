@@ -3,7 +3,7 @@ import GreenSealPlatform from '../../build/contracts/GreenSealPlatform.json';
 
 const platformAddress = process.env.NEXT_PUBLIC_CONTRACT_PLATFORM as string;
 
-export function useRegisterRecycler() {
+export function useContractPlatform(method: string, args: unknown[] = []) {
   const {
     data: hash,
     isPending,
@@ -14,7 +14,8 @@ export function useRegisterRecycler() {
     writeContract({
       address: platformAddress,
       abi: GreenSealPlatform.abi,
-      functionName: 'registerRecycler',
+      functionName: method,
+      args: args,
     })
   }
 

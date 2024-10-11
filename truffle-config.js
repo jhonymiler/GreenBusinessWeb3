@@ -1,8 +1,8 @@
 module.exports = {
   networks: {
     development: {
-      host: "172.30.128.1", // Endereço do Ganache
-      port: 7545,           // Porta padrão do Ganache
+      host: "ganache", // Endereço do Ganache
+      port: 8545,           // Porta padrão do Ganache
       network_id: "*",      // Qualquer network id
       gas: 6721975,         // Limite de gas
     },

@@ -1,10 +1,20 @@
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import { useRegisterRecycler } from '@/contracts/managment';
+import { useContractPlatform } from '@/contracts/managment';
+import { toast } from 'react-hot-toast';
 
 export default function Recycler() {
 
-    const { hash, isPending, isConfirming, isConfirmed, submit } = useRegisterRecycler();
+    const { hash, isPending, isConfirming, isConfirmed, submit } = useContractPlatform('registerRecycler', []);
+
+    if (isConfirmed) {
+        toast.success(
+            <div>
+                Recicladora cadastrada com sucesso! 🎉 <br />
+                Hash: {hash}
+            </div>
+        );
+    }
 
     return (
         <Card >
@@ -12,9 +22,7 @@ export default function Recycler() {
                 <Card.Title>Sou Recicladora</Card.Title>
                 <Card.Text>
                     Clique aqui para se cadastrar como recicladora.
-                    {hash && <div>Transaction Hash: {hash}</div>}
                     {isConfirming && <div>Waiting for confirmation...</div>}
-                    {isConfirmed && <div>Transaction confirmed.</div>}
                 </Card.Text>
                 <Button variant="primary" disabled={isPending} onClick={submit} >Cadastrar</Button>
             </Card.Body>
