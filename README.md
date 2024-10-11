@@ -59,6 +59,85 @@
    ```
 
 3. Isso irá iniciar a aplicação em segundo plano.
+4. Liste os logs do container da aplicação e você verá os contratos que fizeram deploy. Copie os endereços dos contratos:
+```bash
+   2_deploy_contracts.js
+   =====================
+
+      Replacing 'GreenSealToken'
+      --------------------------
+      > transaction hash:    0xd899a5ba93dc303bbc2b08838149a1f2052112a6129d50ee24a8c2fe8d17ef80
+   - Fetching solc version list from solc-bin. Attempt #1
+   - Downloading compiler. Attempt #1.
+   - Blocks: 0            Seconds: 0
+      > Blocks: 0            Seconds: 0
+      > contract address:    0xa506e15a75677487C24229f9A3e81CbC61C75164 # Endereço do primeiro contrato
+      > block number:        95
+      > block timestamp:     1728684169
+      > account:             0xa508dD875f10C33C52a8abb20E16fc68E981F186
+      > balance:             68.95083236
+      > gas used:            841656 (0xcd7b8)
+      > gas price:           20 gwei
+      > value sent:          0 ETH
+      > total cost:          0.01683312 ETH
+
+
+      Replacing 'GreenSealNFT'
+      ------------------------
+      > transaction hash:    0xdd72707d4e04acb9ccdd148bdae513483c71bc754c54683dfb69f31b0fa0b413
+   - Fetching solc version list from solc-bin. Attempt #1
+   - Downloading compiler. Attempt #1.
+   - Blocks: 0            Seconds: 0
+      > Blocks: 0            Seconds: 0
+      > contract address:    0x10F0D87964C436E591bF941B42Dc241C141Db3B9 # Endereço do segundo contrato
+      > block number:        96
+      > block timestamp:     1728684170
+      > account:             0xa508dD875f10C33C52a8abb20E16fc68E981F186
+      > balance:             68.92124504
+      > gas used:            1479366 (0x1692c6)
+      > gas price:           20 gwei
+      > value sent:          0 ETH
+      > total cost:          0.02958732 ETH
+
+
+      Replacing 'GreenSealPlatform'
+      -----------------------------
+      > transaction hash:    0xf5a91796fbc8abcaaf967b04dd60a142cd83820d8f7a4dd870c4733f9380bcac
+   - Fetching solc version list from solc-bin. Attempt #1
+   - Downloading compiler. Attempt #1.
+   - Blocks: 0            Seconds: 0
+      > Blocks: 0            Seconds: 0
+      > contract address:    0x75Cd67E5d038BA0cF748c8B4e08553Fa586CC9e4 # Endereço do terceiro contrato
+      > block number:        97
+      > block timestamp:     1728684170
+      > account:             0xa508dD875f10C33C52a8abb20E16fc68E981F186
+      > balance:             68.90044194
+      > gas used:            1040155 (0xfdf1b)
+      > gas price:           20 gwei
+      > value sent:          0 ETH
+      > total cost:          0.0208031 ETH
+
+      > Saving artifacts
+      -------------------------------------
+      > Total cost:          0.06722354 ETH
+
+   Summary
+   =======
+   > Total deployments:   3
+   > Final cost:          0.06722354 ETH
+```
+5. Em posse dos endereços alimente o arquivo .env:
+```
+NEXT_PUBLIC_CONTRACT_TOKEN=0x10F0D87964C436E591bF941B42Dc241C141Db3B9
+NEXT_PUBLIC_CONTRACT_NFT=0x10F0D87964C436E591bF941B42Dc241C141Db3B9
+NEXT_PUBLIC_CONTRACT_PLATFORM=0x75Cd67E5d038BA0cF748c8B4e08553Fa586CC9e4
+```
+   
+6. Entre dentro do container da aplicação e rode o comando de migração das tabelas do banco de dados:
+   
+```
+npx prisma migrate dev --name init
+```
 
 ### Acessar a Aplicação
 

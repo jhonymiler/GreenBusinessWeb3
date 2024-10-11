@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useContractPlatform } from '@/contracts/managment';
 
+
 export default function Register() {
     const [formData, setFormData] = useState({
         companyType: 'geradora', // default option
@@ -15,7 +16,8 @@ export default function Register() {
         phone: '',
         city: '',
         address: '',
-        state: ''
+        state: '',
+        hash: ''
     });
 
     // Chama os hooks incondicionalmente
@@ -37,33 +39,41 @@ export default function Register() {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        try {
-            const response = await fetch('/api/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData),
-            });
-
-            if (response.ok) {
-                toast.success('Empresa cadastrada com sucesso!');
-                setFormData({
-                    companyType: 'geradora',
-                    companyName: '',
-                    email: '',
-                    phone: '',
-                    city: '',
-                    address: '',
-                    state: ''
+        await submit();
+        if (isConfirmed) {
+            try {
+                const response = await fetch('/api/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData),
                 });
-            } else {
-                toast.error('Falha no cadastro. Tente novamente.');
+
+                if (response.ok) {
+                    toast.success('Empresa cadastrada com sucesso!');
+                    setFormData({
+                        companyType: 'geradora',
+                        companyName: '',
+                        email: '',
+                        phone: '',
+                        city: '',
+                        address: '',
+                        state: '',
+                        hash: ''
+                    });
+                } else {
+                    toast.error('Falha no cadastro. Tente novamente.');
+                }
+            } catch (error) {
+                console.error(error);
+                toast.error('Erro ao se conectar com o servidor.');
             }
-        } catch (error) {
-            console.error(error);
+        } else {
             toast.error('Erro ao se conectar com o servidor.');
         }
+
+
     };
 
     useEffect(() => {
@@ -211,7 +221,7 @@ export default function Register() {
 
                             {isConfirming && <div>Aguardando confirmação...</div>}
 
-                            <Button className='mt-4' variant="success" disabled={isPending} onClick={submit}>
+                            <Button className='mt-4' variant="success" disabled={isPending}>
                                 {isPending ? "Processando..." : "Cadastrar"}
                             </Button>
                         </Form>

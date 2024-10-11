@@ -10,7 +10,7 @@ export function useContractPlatform(method: string, args: unknown[] = []) {
     writeContract
   } = useWriteContract()
 
-  const submit = async () => {
+  const submit = async (): Promise<void> => {
     writeContract({
       address: platformAddress,
       abi: GreenSealPlatform.abi,

@@ -12,19 +12,17 @@ services:
     env_file:
       - .env
     depends_on:
-      - mysql
+      - mysql_db
       - ganache
     networks:
       - app-network
 
-  mysql:
+  mysql_db:
     image: mysql:8
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: ${NEXT_PUBLIC_MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${NEXT_PUBLIC_MYSQL_DATABASE}
-      MYSQL_USER: ${NEXT_PUBLIC_MYSQL_USER}
-      MYSQL_PASSWORD: ${NEXT_PUBLIC_MYSQL_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - "3306:3306"
     volumes:
