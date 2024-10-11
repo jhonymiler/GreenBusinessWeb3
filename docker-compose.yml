@@ -1,0 +1,61 @@
+version: '3.8'
+services:
+  nextjs:
+    build:
+      context: .
+      dockerfile: Dockerfile  # Referencia o Dockerfile personalizado
+    working_dir: /app
+    volumes:
+      - ./:/app
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - mysql
+      - ganache
+    networks:
+      - app-network
+
+  mysql:
+    image: mysql:8
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: ${NEXT_PUBLIC_MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${NEXT_PUBLIC_MYSQL_DATABASE}
+      MYSQL_USER: ${NEXT_PUBLIC_MYSQL_USER}
+      MYSQL_PASSWORD: ${NEXT_PUBLIC_MYSQL_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - app-network
+
+  ganache:
+    image: trufflesuite/ganache-cli:latest
+    ports:
+      - "8545:8545"
+    volumes:
+      - ganache_data:/ganache_data
+    entrypoint:
+      - node
+      - /app/ganache-core.docker.cli.js
+      - --deterministic
+      - --db=/ganache_data
+      - --mnemonic
+      - 'minimum symptom minute gloom tragic situate silver mechanic salad amused elite beef'
+      - --networkId
+      - '5777'
+      - --hostname
+      - '0.0.0.0'
+    networks:
+      - app-network
+
+volumes:
+  mysql-data:
+  ganache_data:
+
+networks:
+  app-network:
+    driver: bridge
