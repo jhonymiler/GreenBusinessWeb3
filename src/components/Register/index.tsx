@@ -97,7 +97,7 @@ export default function Register() {
             <Card>
                 <Card.Body>
                     <Card.Title>Cadastro de Empresa</Card.Title>
-                    <Card.Text>
+                    <div>
                         <Form onSubmit={handleSubmit}>
                             <Row className="mb-3">
                                 <Form.Group as={Col} controlId="formCompanyType">
@@ -232,7 +232,7 @@ export default function Register() {
                                 {isPending ? "Processando..." : "Cadastrar"}
                             </Button>
                         </Form>
-                    </Card.Text>
+                    </div>
                 </Card.Body>
             </Card>
         </>
