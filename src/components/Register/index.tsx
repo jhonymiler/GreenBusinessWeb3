@@ -6,6 +6,7 @@ import Row from 'react-bootstrap/Row';
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 import { useContractPlatform } from '@/contracts/managment';
+import { useAccount } from 'wagmi';
 
 export default function Register() {
     const [formData, setFormData] = useState({
@@ -19,6 +20,8 @@ export default function Register() {
         hash: ''
     });
 
+    const { address: hash } = useAccount();
+
     // Hooks para interagir com a blockchain
     const recyclerHook = useContractPlatform('registerRecycler', []);
     const wasteProducerHook = useContractPlatform('registerWasteGenerator', []);
@@ -27,7 +30,7 @@ export default function Register() {
     const [registered, setRegistered] = useState(false);
 
     // Determina qual hook usar com base no tipo de empresa selecionado
-    const { isPending, isConfirming, isConfirmed, hash, submit } = formData.companyType === 'recicladora'
+    const { isPending, isConfirming, isConfirmed, submit } = formData.companyType === 'recicladora'
         ? recyclerHook
         : wasteProducerHook;
 
@@ -45,7 +48,7 @@ export default function Register() {
     };
 
     useEffect(() => {
-        if (isConfirmed && hash && !registered) {
+        if (isConfirmed && !registered) {
             // Atualiza o formData com o hash da transação
             const updatedFormData = { ...formData, hash };
 
@@ -87,11 +90,11 @@ export default function Register() {
             };
 
             registerCompany();
-        } else if (isConfirmed && hash && registered) {
+        } else if (isConfirmed && registered) {
             // Opcional: Se já está registrado, você pode realizar alguma ação adicional
             console.log('Dados já registrados no backend.');
         }
-    }, [isConfirmed, hash, formData, registered]);
+    }, [isConfirmed, formData, hash, registered]);
 
 
     return (
