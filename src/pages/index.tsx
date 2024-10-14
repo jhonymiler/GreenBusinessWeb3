@@ -1,17 +1,15 @@
 // src/pages/index.tsx
 import { GetServerSideProps } from "next";
 import { getSession } from "next-auth/react";
-import Menu from "@/components/Menu";
-import Register from "@/components/Register";
-import Head from "next/head";
-import { Container, Row } from "react-bootstrap";
-import { ToastContainer } from "react-toastify";
+import { Container, Row, Button } from "react-bootstrap";
 import 'react-toastify/dist/ReactToastify.css';
-import { useAccount } from 'wagmi'
 import { useEffect, useState } from 'react';
+import Menu from "@/components/Menu";
+import Link from "next/link";
 
-export default function Home() {
-  const { isConnected } = useAccount();
+import { Session } from "next-auth";
+
+export default function Home({ session }: { session: Session | null }) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -24,32 +22,27 @@ export default function Home() {
 
   return (
     <>
-      <Head>
-        <title>Empresa Verde</title>
-        <meta name="description" content="Sistema de certificação ambiental" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
       <Menu />
       <Container>
         <Row className='mt-5 mb-2'>
           <h1>Empresa Verde</h1>
           <p>Sistema de certificação ambiental</p>
         </Row>
-        {isConnected ? <Register /> : <p>Página de apresentação</p>}
+        <Row className='mt-5 mb-2'>
+          {session?.user?.isRegistered ? (
+            <p>Bem-vindo, {session.user.name}! Você já está registrado.</p>
+          ) : (
+            <>
+              <p>Você ainda não está registrado.</p>
+              <Link href="/register" passHref legacyBehavior>
+                <Button variant="primary">
+                  Registrar-se
+                </Button>
+              </Link>
+            </>
+          )}
+        </Row>
       </Container>
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
     </>
   );
 }
@@ -60,7 +53,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   return {
     props: {
       session,
-      // outros props que você possa precisar
     },
   };
 };

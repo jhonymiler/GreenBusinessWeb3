@@ -64,23 +64,23 @@ export const authOptions: NextAuthOptions = {
           // Busca a empresa no banco de dados
           const business = await prisma.business.findFirst({
             where: {
-              address: address.toLowerCase(),
+              address: address,
             },
           });
 
           if (!business) {
             // Empresa não cadastrada
             return {
-              id: address.toLowerCase(),
+              id: address,
               name: `User_${address.substring(0, 6)}`,
-              address: address.toLowerCase(),
+              address: address,
               isRegistered: false,
             };
           }
 
           // Empresa cadastrada
           return {
-            id: business.address,
+            id: business.hash,
             name: business.companyName,
             address: business.address,
             isRegistered: true,
@@ -98,9 +98,9 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.address = (user as CustomUser).address;
-        token.name = (user as CustomUser).name;
-        token.isRegistered = (user as CustomUser).isRegistered;
+        token.address = user.address;
+        token.name = user.name;
+        token.isRegistered = user.isRegistered;
       }
       return token;
     },

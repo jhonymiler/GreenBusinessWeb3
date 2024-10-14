@@ -100,10 +100,9 @@ export default function Register() {
     return (
         <Card>
             <Card.Body>
-                <Card.Title>Cadastro de Empresa</Card.Title>
                 <Form onSubmit={handleSubmit}>
                     <Row className="mb-3">
-                        <Form.Group as={Col} controlId="formCompanyType" className='mt-5'>
+                        <Form.Group as={Col} controlId="formCompanyType">
                             <Form.Check
                                 type="radio"
                                 label="Recicladora"

@@ -18,9 +18,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   if (req.method === 'POST') {
-    if (!session) {
-      return res.status(401).json({ message: 'Não autenticado.' });
-    }
 
     const { companyType, companyName, email, phone, city, address, state, hash } = req.body;
 
@@ -40,8 +37,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           city,
           address,
           state,
-          hash, // Armazena o hash da transação na blockchain
-          userId: (session.user as any).id, // Ajuste conforme sua interface de sessão
+          hash
         },
       });
 
