@@ -113,4 +113,6 @@ contract GreenSealPlatform is Ownable {
 
         emit SealPurchased(msg.sender, newSealId, level);
     }
+
+
 }

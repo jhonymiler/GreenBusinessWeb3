@@ -86,7 +86,7 @@ export const authOptions: NextAuthOptions = {
           return {
             id: business.hash,
             name: business.companyName,
-            address: business.address,
+            address: business.hash,
             isRegistered: true,
           } as CustomUser;
         } catch (error) {

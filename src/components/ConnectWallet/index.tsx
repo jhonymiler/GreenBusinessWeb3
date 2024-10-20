@@ -2,17 +2,17 @@
 
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useSignMessage, useAccount } from "wagmi";
-import { signIn, useSession } from "next-auth/react";
+import { signIn, signOut, useSession } from "next-auth/react";
 import { useEffect } from "react";
 
 export default function ConnectWallet() {
     const { data: session } = useSession();
     const { signMessageAsync } = useSignMessage();
-    const { isConnected, address } = useAccount();
+    const { isConnected, address, isDisconnected } = useAccount();
 
     useEffect(() => {
         const handleLogin = async () => {
-            if (!isConnected || session) return; // Prevent multiple logins
+            if (!isConnected || session) return;
 
             try {
                 const message = "Autenticar-se com a carteira para acessar a plataforma."; // Message to sign
@@ -36,8 +36,13 @@ export default function ConnectWallet() {
     }, [isConnected, signMessageAsync, session, address]);
 
     useEffect(() => {
-        console.log("Session in ConnectWallet:", session);
-    }, [session]);
+        const logout = async () => {
+            if (isDisconnected && session) {
+                await signOut();
+            }
+        }
+        logout();
+    }, [isConnected, session, isDisconnected]);
 
     return (
         <div>
