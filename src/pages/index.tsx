@@ -32,14 +32,13 @@ export default function Home(props: InferGetServerSidePropsType<typeof getServer
         <Row className='mt-5 mb-2'>
           {session?.user?.isRegistered ? (
             <>
-              <h2>Balanço do Token</h2>
-              <p>Bem-vindo, {session.user.name}!</p>
+              <h2>{session.user.name}</h2>
               {isLoading ? (
                 <p>Carregando balanço...</p>
               ) : isError ? (
                 <p>Erro ao carregar balanço.</p>
               ) : (
-                <p>Seu balanço: {balance?.toString() || '0'} tokens</p>
+                <p>Seu balanço: {balance?.toString() || '0'} Tons</p>
               )}
             </>
           ) : (
