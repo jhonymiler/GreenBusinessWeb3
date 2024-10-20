@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.19;
 
 
 import "./GreenSealToken.sol";
@@ -12,8 +12,9 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 // import "@openzeppelin/contracts@4.9.6/access/Ownable.sol";
 
 contract GreenSealPlatform is Ownable {
-    GreenSealToken public token;
     GreenSealNFT public nft;
+    GreenSealToken public token;
+    Transaction[] public transactions;
 
     struct Recycler {
         bool isRegistered;
@@ -33,19 +34,18 @@ contract GreenSealPlatform is Ownable {
     mapping(address => Recycler) public recyclers;
     mapping(address => WasteGenerator) public wasteGenerators;
     mapping(string => bool) public invoiceKeys;
-    Transaction[] public transactions;
 
     event RecyclerRegistered(address recycler);
-    event WasteGeneratorRegistered(address generator);
+    event WasteGeneratorRegistered(address indexed generator);
     event TokensIssued(address generator, uint256 amount);
-    event SealPurchased(address generator, uint256 sealId, GreenSealNFT.SealLevel level);
+    event SealPurchased(address indexed generator, uint256 sealId, GreenSealNFT.SealLevel level);
 
-    constructor(address tokenAddress, address nftAddress){
+    constructor(address tokenAddress, address nftAddress) {
         token = GreenSealToken(tokenAddress);
         nft = GreenSealNFT(nftAddress);
     }
 
-    // Funções de registro
+    // Funções de Registro
     function registerRecycler() external {
         recyclers[msg.sender] = Recycler({ isRegistered: true });
         emit RecyclerRegistered(msg.sender);
@@ -56,13 +56,13 @@ contract GreenSealPlatform is Ownable {
         emit WasteGeneratorRegistered(msg.sender);
     }
 
-    // Função para registrar transações
+    // Registrar uma transação
     function recordTransaction(address generator, uint256 tonnes, string calldata invoiceKey) external {
-        require(recyclers[msg.sender].isRegistered, "Caller is not a registered recycler");
-        require(wasteGenerators[generator].isRegistered, "Generator is not registered");
-        require(!invoiceKeys[invoiceKey], "Transaction with this invoice key already recorded");
+        require(recyclers[msg.sender].isRegistered, "Chamador nao e um reciclador registrado");
+        require(wasteGenerators[generator].isRegistered, "Gerador nao esta registrado");
+        require(!invoiceKeys[invoiceKey], "Transacao com esta chave de fatura ja registrada");
 
-        // Registrar a transação
+        // Registrar a transacao
         transactions.push(Transaction({
             generator: generator,
             recycler: msg.sender,
@@ -71,35 +71,46 @@ contract GreenSealPlatform is Ownable {
         }));
         invoiceKeys[invoiceKey] = true;
 
-        // Emitir tokens para o gerador de resíduos
+        // Emitir tokens para o gerador de residuos
         token.mint(generator, tonnes);
 
         emit TokensIssued(generator, tonnes);
     }
 
-    // Função para comprar selos
-    function purchaseSeal(GreenSealNFT.SealLevel level) external {
-        require(wasteGenerators[msg.sender].isRegistered, "Caller is not a registered waste generator");
+    // Comprar um selo
+    function purchaseSeal(GreenSealNFT.SealLevel level, uint256 lowerLevelTokenId) external {
+        require(wasteGenerators[msg.sender].isRegistered, "Chamador nao e um gerador de residuos registrado");
 
         uint256 requiredTokens;
+
         if (level == GreenSealNFT.SealLevel.Bronze) {
             requiredTokens = 10;
+            // Não precisa fornecer lowerLevelTokenId
         } else if (level == GreenSealNFT.SealLevel.Prata) {
             requiredTokens = 100;
+            require(nft.ownerOf(lowerLevelTokenId) == msg.sender, "Voce nao possui o selo de nivel inferior");
+            require(nft.sealLevels(lowerLevelTokenId) == GreenSealNFT.SealLevel.Bronze, "Selo nao e do nivel Bronze");
+            // Queimar o selo de nivel inferior
+            nft.burn(lowerLevelTokenId);
         } else if (level == GreenSealNFT.SealLevel.Ouro) {
             requiredTokens = 1000;
+            require(nft.ownerOf(lowerLevelTokenId) == msg.sender, "Voce nao possui o selo de nivel inferior");
+            require(nft.sealLevels(lowerLevelTokenId) == GreenSealNFT.SealLevel.Prata, "Selo nao e do nivel Prata");
+            // Queimar o selo de nivel inferior
+            nft.burn(lowerLevelTokenId);
         } else {
-            revert("Invalid seal level");
+            revert("Nivel de selo invalido");
         }
 
-        require(token.balanceOf(msg.sender) >= requiredTokens, "Not enough tokens to purchase this seal");
+        // Verificar saldo de tokens
+        require(token.balanceOf(msg.sender) >= requiredTokens, "Nao ha tokens suficientes para comprar este selo");
 
-        // O gerador precisa aprovar a transferência de tokens primeiro
-        token.transferFrom(msg.sender, address(this), requiredTokens);
+        // Queimar tokens
+        token.burnFrom(msg.sender, requiredTokens);
 
-        // Mintar o NFT do selo
-        uint256 sealId = nft.mintSeal(msg.sender, level);
+        // Mintar o novo selo
+        uint256 newSealId = nft.mintSeal(msg.sender, level);
 
-        emit SealPurchased(msg.sender, sealId, level);
+        emit SealPurchased(msg.sender, newSealId, level);
     }
 }

@@ -27,6 +27,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
+      const business = await prisma.business.findFirst({
+          where: {
+              hash: {
+                  equals: address
+              }
+          }
+      });
+
+      if (business) {
+          res.status(200).json({ message: 'Empresa já cadastrada!'});
+          return;
+      }
+
       // Insere os dados da empresa no banco de dados junto com o hash da transação
       const company = await prisma.business.create({
         data: {

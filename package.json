@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "prisma migrate dev && next dev",
+    "dev": "prisma migrate dev && node server.js",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -15,6 +15,8 @@
     "@tanstack/react-query": "^5.59.9",
     "bootstrap": "^5.3.3",
     "dotenv": "^16.4.5",
+    "ethers": "^6.13.4",
+    "http": "^0.0.1-security",
     "next": "14.2.15",
     "next-auth": "^4.24.8",
     "prisma": "^5.20.0",

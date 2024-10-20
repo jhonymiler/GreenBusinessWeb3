@@ -21,7 +21,6 @@ export default function Register() {
     });
 
     const { address: hash } = useAccount();
-
     // Hooks para interagir com a blockchain
     const recyclerHook = useContractPlatform('registerRecycler', []);
     const wasteProducerHook = useContractPlatform('registerWasteGenerator', []);
@@ -66,18 +65,6 @@ export default function Register() {
                     if (response.ok) {
                         const business = formData.companyType === 'geradora' ? "Geradora de resíduos" : "Recicladora";
                         toast.success(`${business} cadastrada com sucesso na blockchain! 🎉`);
-
-                        // Resetar formulário
-                        setFormData({
-                            companyType: 'geradora',
-                            companyName: '',
-                            email: '',
-                            phone: '',
-                            city: '',
-                            address: '',
-                            state: '',
-                            hash: ''
-                        });
                         setRegistered(true);
                     } else {
                         const errorData = await response.json();

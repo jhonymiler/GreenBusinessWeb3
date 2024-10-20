@@ -1,20 +1,21 @@
-// src/pages/index.tsx
-import { GetServerSideProps } from "next";
-import { getSession } from "next-auth/react";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { Container, Row, Button } from "react-bootstrap";
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect, useState } from 'react';
 import Menu from "@/components/Menu";
 import Link from "next/link";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]";
+import { useSession } from "next-auth/react";
 
-import { Session } from "next-auth";
-
-export default function Home({ session }: { session: Session | null }) {
+export default function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [mounted, setMounted] = useState(false);
+  const { data: session } = useSession();
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    console.log('Session on client:', session);
+  }, [session]);
 
   if (!mounted) {
     return null; // ou uma tela de carregamento
@@ -48,7 +49,7 @@ export default function Home({ session }: { session: Session | null }) {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-  const session = await getSession(context);
+  const session = await getServerSession(context.req, context.res, authOptions);
 
   return {
     props: {

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
+pragma solidity ^0.8.19;
 
 // Importação no VSCode
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
@@ -14,21 +14,44 @@ contract GreenSealNFT is ERC721, Ownable {
 
     enum SealLevel { Bronze, Prata, Ouro }
 
-    struct Seal {
-        uint256 id;
-        SealLevel level;
-    }
+    mapping(uint256 => SealLevel) public sealLevels;
 
-    mapping(uint256 => Seal) public seals;
+    event SealMinted(address indexed to, uint256 indexed tokenId, SealLevel level);
+    event SealBurned(address indexed from, uint256 indexed tokenId, SealLevel level);
 
-    constructor() ERC721("GreenSealNFT", "GSN")  {
-        // Passando msg.sender como o proprietário inicial
-    }
+    constructor() ERC721("GreenSealNFT", "GSN") {}
 
     function mintSeal(address to, SealLevel level) external onlyOwner returns (uint256) {
         currentTokenId++;
         _safeMint(to, currentTokenId);
-        seals[currentTokenId] = Seal(currentTokenId, level);
+        sealLevels[currentTokenId] = level;
+        
+        emit SealMinted(to, currentTokenId, level);
         return currentTokenId;
+    }
+
+    function burn(uint256 tokenId) external onlyOwner {
+        require(_exists(tokenId), "Token nao existe");
+        SealLevel level = sealLevels[tokenId];
+        address owner = ownerOf(tokenId);
+        _burn(tokenId);
+        delete sealLevels[tokenId];
+        
+        emit SealBurned(owner, tokenId, level);
+    }
+
+    // Tornar NFTs intransferíveis
+    function _beforeTokenTransfer(address from, address to, uint256 tokenId, uint256 batchSize) internal override {
+        super._beforeTokenTransfer(from, to, tokenId, batchSize);
+        require(from == address(0) || to == address(0), "Transferencias nao permitidas");
+    }
+
+    // Remover funções de aprovação
+    function approve(address /*to*/, uint256 /*tokenId*/) public virtual override {
+        revert("Aprovacao nao permitida");
+    }
+
+    function setApprovalForAll(address /*operator*/, bool /*approved*/) public virtual override {
+        revert("Aprovacao nao permitida");
     }
 }

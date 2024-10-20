@@ -1,13 +1,14 @@
 // src/pages/index.tsx
-import { GetServerSideProps } from "next";
-import { getSession } from "next-auth/react";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import 'react-toastify/dist/ReactToastify.css';
 import { useEffect, useState } from 'react';
 import Menu from "@/components/Menu";
 import Register from "@/components/Register";
 import { Container } from "react-bootstrap";
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]";
 
-export default function Home() {
+export default function Home(props: InferGetServerSidePropsType<typeof getServerSideProps>) {
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -31,12 +32,11 @@ export default function Home() {
 }
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
-    const session = await getSession(context);
+    const session = await getServerSession(context.req, context.res, authOptions);
 
     return {
         props: {
             session,
-            // outros props que você possa precisar
         },
     };
 };

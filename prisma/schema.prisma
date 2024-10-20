@@ -20,4 +20,17 @@ model business {
   state       String
   hash        String
   createdAt   DateTime @default(now())
+
+  seals       seal[]   // Adiciona essa linha para criar a relação inversa
+}
+
+model seal {
+  id          Int     @id @default(autoincrement())
+  business_id Int
+  level       String
+  token_id    String
+  image       String  
+  createdAt   DateTime @default(now())
+
+  business business @relation(fields: [business_id], references: [id])
 }
